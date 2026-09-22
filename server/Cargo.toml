@@ -1,0 +1,40 @@
+[package]
+name = "remotex-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "RemoteX signaling, relay and admin server"
+
+[[bin]]
+name = "remotex-server"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+axum = { version = "0.8", features = ["ws"] }
+axum-server = { version = "0.7", default-features = false, features = ["tls-rustls-no-provider"] }
+futures-util = "0.3"
+hex.workspace = true
+rand = "0.9"
+rcgen = { version = "0.13", default-features = false, features = ["ring", "pem"] }
+remotex-common = { version = "0.1.0", path = "../crates/common" }
+remotex-security = { version = "0.1.0", path = "../crates/security" }
+rusqlite = { version = "0.32", features = ["bundled"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sha2 = "0.10"
+subtle = "2"
+sysinfo = "0.33"
+tokio = { workspace = true, features = ["full"] }
+tower-http = { version = "0.6", features = ["fs"] }
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+[target."cfg(windows)".dependencies]
+windows-service = "0.8"
+
+[dev-dependencies]
+tempfile = "3"
+tokio-tungstenite = "0.26"

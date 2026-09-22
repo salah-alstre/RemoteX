@@ -1,0 +1,39 @@
+[package]
+name = "remotex-service"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "RemoteX Windows service: privileged input and secure-desktop access for approved elevated sessions"
+
+[lib]
+name = "remotex_service"
+path = "src/lib.rs"
+
+[[bin]]
+name = "remotex-service"
+path = "src/main.rs"
+
+[dependencies]
+remotex-common = { version = "0.1.0", path = "../common" }
+remotex-elevate = { version = "0.1.0", path = "../elevate" }
+remotex-input = { version = "0.1.0", path = "../input" }
+remotex-security = { version = "0.1.0", path = "../security" }
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[target."cfg(windows)".dependencies]
+windows-service = "0.8"
+windows = { version = "0.62", features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Gdi",
+  "Win32_Security",
+  "Win32_Security_Authorization",
+  "Win32_System_Environment",
+  "Win32_System_RemoteDesktop",
+  "Win32_System_Services",
+  "Win32_System_StationsAndDesktops",
+  "Win32_System_Threading",
+  "Win32_UI_HiDpi",
+  "Win32_UI_WindowsAndMessaging",
+] }

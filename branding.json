@@ -1,0 +1,12 @@
+{
+  "name": "RemoteX",
+  "identifier": "app.remotex.desktop",
+  "company": "RemoteX Labs",
+  "website": "https://remotex.example.com",
+  "github": "https://github.com/remotex-labs/remotex",
+  "supportEmail": "support@remotex.example.com",
+  "colors": {
+    "accent": "#3b82f6",
+    "accentDark": "#60a5fa"
+  }
+}

@@ -1,0 +1,39 @@
+[package]
+name = "remotex-session"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+futures-util = "0.3"
+hex.workspace = true
+rand = "0.9"
+remotex-common = { version = "0.1.0", path = "../common" }
+remotex-files = { version = "0.1.0", path = "../files" }
+remotex-input = { version = "0.1.0", path = "../input" }
+remotex-security = { version = "0.1.0", path = "../security" }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+sha2 = "0.10"
+thiserror = "2"
+tokio = { workspace = true, features = ["full"] }
+tokio-tungstenite = { version = "0.26", features = ["connect", "__rustls-tls"] }
+tracing = "0.1"
+webpki-roots = "0.26"
+
+[target."cfg(windows)".dependencies]
+remotex-capture = { version = "0.1.0", path = "../capture" }
+remotex-codec = { version = "0.1.0", path = "../codec" }
+remotex-elevate = { version = "0.1.0", path = "../elevate" }
+
+[dev-dependencies]
+remotex-server = { path = "../../server" }
+tempfile = "3"
+
+[features]
+testing = []
+
+[dev-dependencies.remotex-session]
+path = "."
+features = ["testing"]

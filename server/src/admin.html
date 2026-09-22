@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Infrastructure status</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f6f7f9; --fg:#14171c; --mut:#667085; --card:#fff; --line:#e4e7ec; --ok:#12805c; --bad:#c0392b; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1013; --fg:#e8eaed; --mut:#98a2b3; --card:#171a1f; --line:#272b33; --ok:#3ecf9a; --bad:#ff7a6b; } }
+  body { margin:0; font:14px/1.5 system-ui, "Segoe UI", sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:960px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:18px; margin:0 0 4px; } p.sub { color:var(--mut); margin:0 0 20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+  .m { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .m b { display:block; font-size:22px; font-variant-numeric:tabular-nums; } .m span { color:var(--mut); font-size:12px; }
+  table { width:100%; border-collapse:collapse; margin-top:20px; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  th,td { text-align:start; padding:8px 12px; border-bottom:1px solid var(--line); } th { color:var(--mut); font-weight:500; }
+  form { display:flex; gap:8px; margin:0 0 16px; } input { flex:1; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
+  button { padding:8px 14px; border-radius:8px; border:0; background:#2f6feb; color:#fff; cursor:pointer; }
+  .status { font-weight:600; } .up { color:var(--ok); } .down { color:var(--bad); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Infrastructure status</h1>
+  <p class="sub">Operational counters only. Session content is end-to-end encrypted and never visible here.</p>
+  <form id="login"><input id="token" type="password" placeholder="Admin token" autocomplete="off" aria-label="Admin token"><button>Sign in</button></form>
+  <p class="status" id="state" role="status"></p>
+  <div class="grid" id="grid"></div>
+  <table id="versions" hidden><thead><tr><th>Client version</th><th>Devices</th></tr></thead><tbody></tbody></table>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let token = sessionStorage.getItem("admin-token") || "";
+const fmtBytes = (n) => n > 1e9 ? (n/1e9).toFixed(2)+" GB" : n > 1e6 ? (n/1e6).toFixed(1)+" MB" : (n/1e3).toFixed(0)+" KB";
+const fmtUp = (s) => `${Math.floor(s/86400)}d ${Math.floor(s%86400/3600)}h ${Math.floor(s%3600/60)}m`;
+async function refresh() {
+  if (!token) return;
+  try {
+    const r = await fetch("/admin/api/stats", { headers: { Authorization: "Bearer " + token } });
+    if (!r.ok) { sessionStorage.removeItem("admin-token"); token = ""; $("state").textContent = "✕ Access denied"; $("state").className = "status down"; return; }
+    const s = await r.json();
+    $("state").textContent = "● Online · v" + s.server_version + " · up " + fmtUp(s.uptime_secs);
+    $("state").className = "status up";
+    const cards = [
+      ["Online devices", s.online_devices], ["Active sessions", s.sessions.active],
+      ["Direct sessions", s.sessions.direct], ["Relay sessions", s.sessions.relay],
+      ["Relay bandwidth", s.relay_mbps.toFixed(2) + " Mbps"], ["Relay total", fmtBytes(s.relay_bytes_total)],
+      ["Server CPU", s.cpu_percent.toFixed(0) + "%"], ["Server memory", fmtBytes(s.process_memory) + " / " + fmtBytes(s.memory_total)],
+      ["Sessions ever", s.sessions_total], ["Refused connects", s.connects_rejected],
+      ["Auth failures (1h)", s.auth_failures_last_hour], ["Protocol errors", s.errors],
+    ];
+    $("grid").replaceChildren(...cards.map(([k, v]) => { const d = document.createElement("div"); d.className = "m"; d.innerHTML = "<b></b><span></span>"; d.firstChild.textContent = v; d.lastChild.textContent = k; return d; }));
+    const body = $("versions").querySelector("tbody"); body.replaceChildren();
+    for (const [v, n] of s.client_versions) { const tr = body.insertRow(); tr.insertCell().textContent = v; tr.insertCell().textContent = n; }
+    $("versions").hidden = s.client_versions.length === 0;
+  } catch { $("state").textContent = "✕ Server unreachable"; $("state").className = "status down"; }
+}
+$("login").addEventListener("submit", (e) => { e.preventDefault(); token = $("token").value; sessionStorage.setItem("admin-token", token); $("token").value = ""; refresh(); });
+setInterval(refresh, 5000); refresh();
+</script>
+</body>
+</html>

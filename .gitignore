@@ -1,0 +1,13 @@
+target/
+node_modules/
+dist/
+.env
+*.pem
+*.key
+*.db
+*.db-*
+/dist-server/
+/release/
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/target/
+target-dev/

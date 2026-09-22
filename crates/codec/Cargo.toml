@@ -1,0 +1,14 @@
+[package]
+name = "remotex-codec"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+remotex-common = { version = "0.1.0", path = "../common" }
+thiserror = "2"
+tracing = "0.1"
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Media_MediaFoundation", "Win32_System_Com", "Win32_System_Variant", "Win32_System_Com_StructuredStorage", "Win32_System_Ole"] }
+
+[dev-dependencies]
+remotex-capture = { path = "../capture" }

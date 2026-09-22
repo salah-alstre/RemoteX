@@ -1,0 +1,20 @@
+[package]
+name = "remotex-security"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+chacha20poly1305 = "0.10"
+hkdf = "0.12"
+hmac = "0.12"
+rand = "0.9"
+remotex-common = { version = "0.1.0", path = "../common" }
+sha2 = "0.10"
+spake2 = "0.4"
+subtle = "2"
+thiserror = "2"
+zeroize = "1"
+
+[target."cfg(windows)".dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Security_Cryptography", "Win32_System_Memory"] }

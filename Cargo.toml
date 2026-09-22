@@ -1,0 +1,38 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/common", "crates/security", "crates/capture", "crates/codec",
+  "crates/input", "crates/files", "crates/session", "crates/elevate", "crates/service",
+  "server", "apps/desktop/src-tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+rust-version = "1.80"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+postcard = { version = "1", features = ["use-std"] }
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util", "fs"] }
+tracing = "0.1"
+rand = "0.9"
+sha2 = "0.10"
+hex = "0.4"
+remotex-common = { path = "crates/common" }
+remotex-security = { path = "crates/security" }
+remotex-capture = { path = "crates/capture" }
+remotex-codec = { path = "crates/codec" }
+remotex-input = { path = "crates/input" }
+remotex-files = { path = "crates/files" }
+remotex-session = { path = "crates/session" }
+remotex-elevate = { path = "crates/elevate" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+strip = true
+panic = "unwind"

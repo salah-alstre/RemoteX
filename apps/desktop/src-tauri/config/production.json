@@ -1,0 +1,11 @@
+{
+  "_comment": "Official RemoteX infrastructure. Compiled into the native client; it is never read from disk or from the web UI at runtime. See docs/INFRASTRUCTURE.md for rotation and domain migration.",
+  "host": "45.88.9.191",
+  "port": 8443,
+  "path": "/ws",
+  "pins": {
+    "current": "3525ea50960ad2d5a39a526ead38abb74c5fd25eb6c738cb4f66a934df63cad0",
+    "backup": ""
+  },
+  "updateManifestUrl": "https://45.88.9.191:8443/updates/latest.json"
+}
